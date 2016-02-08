@@ -21,12 +21,12 @@ func init() {
 
 func main() {
 	app := cli.App("subjetcs-rw-neo4j", "A RESTful API for managing Subjects in neo4j")
-	neoURL := stringEnv("NEO_URL", "http://localhost:7474/db/data")//"neo4j endpoint URL"
-	port := intEnv("PORT", 8080)//"Port to listen on"
-	batchSize := intEnv("BATCH_SIZE", 1024)//"Maximum number of statements to execute per batch"
-	graphiteTCPAddress := stringEnv("GRAPHITE_TCP_ADDRESS", "")//"Graphite TCP address, e.g. graphite.ft.com:2003. Leave as default if you do NOT want to output to graphite (e.g. if running locally)"
-	graphitePrefix := stringEnv("GRAPHITE_PREFIX", "")//"Prefix to use. Should start with content, include the environment, and the host name. e.g. coco.pre-prod.subjects-rw-neo4j.1"
-	logMetrics := boolEnv("LOG_METRICS", false)//"Whether to log metrics. Set to true if running locally and you want metrics output"
+	neoURL := stringEnv("NEO_URL", "http://localhost:7474/db/data") //"neo4j endpoint URL"
+	port := intEnv("PORT", 8080)                                    //"Port to listen on"
+	batchSize := intEnv("BATCH_SIZE", 1024)                         //"Maximum number of statements to execute per batch"
+	graphiteTCPAddress := stringEnv("GRAPHITE_TCP_ADDRESS", "")     //"Graphite TCP address, e.g. graphite.ft.com:2003. Leave as default if you do NOT want to output to graphite (e.g. if running locally)"
+	graphitePrefix := stringEnv("GRAPHITE_PREFIX", "")              //"Prefix to use. Should start with content, include the environment, and the host name. e.g. coco.pre-prod.subjects-rw-neo4j.1"
+	logMetrics := boolEnv("LOG_METRICS", false)                     //"Whether to log metrics. Set to true if running locally and you want metrics output"
 
 	app.Action = func() {
 		db, err := neoism.Connect(neoURL)

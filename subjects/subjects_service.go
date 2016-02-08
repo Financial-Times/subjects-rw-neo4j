@@ -1,6 +1,5 @@
 package subjects
 
-
 import (
 	"encoding/json"
 
@@ -23,7 +22,7 @@ func (s service) Initialise() error {
 	return neoutils.EnsureConstraints(s.indexManager, map[string]string{
 		"Thing":   "uuid",
 		"Concept": "uuid",
-		"Subject":  "uuid"})
+		"Subject": "uuid"})
 }
 
 func (s service) Read(uuid string) (interface{}, bool, error) {
@@ -65,9 +64,9 @@ func (s service) Write(thing interface{}) error {
 		params["prefLabel"] = sub.CanonicalName
 	}
 
-	if sub.TmeIdentifier !="" {
-			params["tmeIdentifier"] = sub.TmeIdentifier
-		}
+	if sub.TmeIdentifier != "" {
+		params["tmeIdentifier"] = sub.TmeIdentifier
+	}
 
 	query := &neoism.CypherQuery{
 		Statement: `MERGE (n:Thing {uuid: {uuid}})
