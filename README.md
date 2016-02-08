@@ -1,4 +1,5 @@
 # Subjects Reader/Writer for Neo4j (subjects-rw-neo4j)
+[![Circle CI](https://circleci.com/gh/Financial-Times/subjects-rw-neo4j/tree/master.png?style=shield)](https://circleci.com/gh/Financial-Times/subjects-rw-neo4j/tree/master)
 
 __An API for reading/writing subjects into Neo4j. Expects the subjects json supplied to be in the format that comes out of the subjects transformer.__
 
