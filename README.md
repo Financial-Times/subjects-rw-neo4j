@@ -24,6 +24,13 @@ export|set LOG_METRICS=true
 $GOPATH/bin/subjects-rw-neo4j
 ```
 
+With Docker:
+
+`docker build -t coco/subjects-rw-neo4j .`
+
+`docker run -ti --env NEO_URL=<base url> coco/subjects-rw-neo4j`
+
+
 All arguments are optional, they default to a local Neo4j install on the default port (7474), application running on port 8080, batchSize of 1024, graphiteTCPAddress of "" (meaning metrics won't be written to Graphite), graphitePrefix of "" and logMetrics false.
 
 NB: the default batchSize is much higher than the throughput the instance data ingester currently can cope with.
