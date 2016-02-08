@@ -1,0 +1,8 @@
+*.exe*
+*-config.json
+*.log
+*.html
+*coverage.*
+*.iml
+subjects-rw-neo4j
+.idea/
