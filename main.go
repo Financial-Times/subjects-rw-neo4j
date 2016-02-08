@@ -50,7 +50,7 @@ func main() {
 
 		baseftrwapp.RunServer(engs,
 			v1a.Handler("ft-subjects_rw_neo4j ServiceModule", "Writes 'subjects' to Neo4j, usually as part of a bulk upload done on a schedule", checks...),
-			port)
+			port, "subjects-rw-neo4j", "local")
 	}
 
 	app.Run(os.Args)
