@@ -12,7 +12,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/jawher/mow.cli"
 	"github.com/jmcvetta/neoism"
-	"strconv"
 )
 
 func init() {
@@ -21,23 +20,53 @@ func init() {
 
 func main() {
 	app := cli.App("subjetcs-rw-neo4j", "A RESTful API for managing Subjects in neo4j")
-	neoURL := stringEnv("NEO_URL", "http://localhost:7474/db/data") //"neo4j endpoint URL"
-	port := intEnv("PORT", 8080)                                    //"Port to listen on"
-	batchSize := intEnv("BATCH_SIZE", 1024)                         //"Maximum number of statements to execute per batch"
-	graphiteTCPAddress := stringEnv("GRAPHITE_TCP_ADDRESS", "")     //"Graphite TCP address, e.g. graphite.ft.com:2003. Leave as default if you do NOT want to output to graphite (e.g. if running locally)"
-	graphitePrefix := stringEnv("GRAPHITE_PREFIX", "")              //"Prefix to use. Should start with content, include the environment, and the host name. e.g. coco.pre-prod.subjects-rw-neo4j.1"
-	logMetrics := boolEnv("LOG_METRICS", false)                     //"Whether to log metrics. Set to true if running locally and you want metrics output"
+	neoURL := app.String(cli.StringOpt{
+		Name:   "neo-url",
+		Value:  "http://localhost:7474/db/data",
+		Desc:   "neo4j endpoint URL",
+		EnvVar: "NEO_URL",
+	})
+	graphiteTCPAddress := app.String(cli.StringOpt{
+		Name:   "graphite-tcp-address",
+		Value:  "",
+		Desc:   "Graphite TCP address, e.g. graphite.ft.com:2003. Leave as default if you do NOT want to output to graphite (e.g. if running locally",
+		EnvVar: "GRAPHITE_TCP_ADDRESS",
+	})
+	graphitePrefix := app.String(cli.StringOpt{
+		Name:   "graphite-prefix",
+		Value:  "",
+		Desc:   "Prefix to use. Should start with content, include the environment, and the host name. e.g. coco.pre-prod.subjects-rw-neo4j.1",
+		EnvVar: "GRAPHITE_PREFIX",
+	})
+	port := app.Int(cli.IntOpt{
+		Name:   "port",
+		Value:  8080,
+		Desc:   "Port to listen on",
+		EnvVar: "PORT",
+	})
+	batchSize := app.Int(cli.IntOpt{
+		Name:   "batch-size",
+		Value:  1024,
+		Desc:   "Maximum number of statements to execute per batch",
+		EnvVar: "BATCH_SIZE",
+	})
+	logMetrics := app.Bool(cli.BoolOpt{
+		Name:   "log-metrics",
+		Value:  false,
+		Desc:   "Whether to log metrics. Set to true if running locally and you want metrics output",
+		EnvVar: "LOG_METRICS",
+	})
 
 	app.Action = func() {
-		db, err := neoism.Connect(neoURL)
+		db, err := neoism.Connect(*neoURL)
 		if err != nil {
 			log.Errorf("Could not connect to neo4j, error=[%s]\n", err)
 		}
 
-		batchRunner := neoutils.NewBatchCypherRunner(neoutils.StringerDb{db}, batchSize)
+		batchRunner := neoutils.NewBatchCypherRunner(neoutils.StringerDb{db}, *batchSize)
 		subjectsDriver := subjects.NewCypherSubjectsService(batchRunner, db)
 
-		baseftrwapp.OutputMetricsIfRequired(graphiteTCPAddress, graphitePrefix, logMetrics)
+		baseftrwapp.OutputMetricsIfRequired(*graphiteTCPAddress, *graphitePrefix, *logMetrics)
 
 		engs := map[string]baseftrwapp.Service{
 			"subjects": subjectsDriver,
@@ -50,7 +79,7 @@ func main() {
 
 		baseftrwapp.RunServer(engs,
 			v1a.Handler("ft-subjects_rw_neo4j ServiceModule", "Writes 'subjects' to Neo4j, usually as part of a bulk upload done on a schedule", checks...),
-			port, "subjects-rw-neo4j", "local")
+			*port, "subjects-rw-neo4j", "local")
 	}
 
 	app.Run(os.Args)
@@ -65,36 +94,4 @@ func makeCheck(service baseftrwapp.Service, cr neoutils.CypherRunner) v1a.Check 
 		TechnicalSummary: fmt.Sprintf("Cannot connect to Neo4j instance %s with at least one subject loaded in it", cr),
 		Checker:          func() (string, error) { return "", service.Check() },
 	}
-}
-
-func stringEnv(key string, def string) string {
-	v := os.Getenv(key)
-	if v == "" {
-		return def
-	}
-	return v
-}
-
-func intEnv(key string, def int) int {
-	v := os.Getenv(key)
-	if v == "" {
-		return def
-	}
-	i, err := strconv.Atoi(v)
-	if err != nil {
-		log.Errorf("Could not convert %s:\"%s\" to int. Using default value: %d", key, v, def)
-	}
-	return i
-}
-
-func boolEnv(key string, def bool) bool {
-	v := os.Getenv(key)
-	if v == "" {
-		return def
-	}
-	b, err := strconv.ParseBool(v)
-	if err != nil {
-		log.Errorf("Could not convert %s:\"%s\" to int. Using default value: %d", key, v, def)
-	}
-	return b
 }
