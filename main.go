@@ -68,16 +68,16 @@ func main() {
 
 		baseftrwapp.OutputMetricsIfRequired(*graphiteTCPAddress, *graphitePrefix, *logMetrics)
 
-		engs := map[string]baseftrwapp.Service{
+		endpoints := map[string]baseftrwapp.Service{
 			"subjects": subjectsDriver,
 		}
 
 		var checks []v1a.Check
-		for _, e := range engs {
+		for _, e := range endpoints {
 			checks = append(checks, makeCheck(e, batchRunner))
 		}
 
-		baseftrwapp.RunServer(engs,
+		baseftrwapp.RunServer(endpoints,
 			v1a.Handler("ft-subjects_rw_neo4j ServiceModule", "Writes 'subjects' to Neo4j, usually as part of a bulk upload done on a schedule", checks...),
 			*port, "subjects-rw-neo4j", "local")
 	}
