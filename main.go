@@ -7,7 +7,7 @@ import (
 
 	"github.com/Financial-Times/base-ft-rw-app-go/baseftrwapp"
 	"github.com/Financial-Times/go-fthealth/v1a"
-	"github.com/Financial-Times/neo-utils-go"
+	"github.com/Financial-Times/neo-utils-go/neoutils"
 	"github.com/Financial-Times/subjects-rw-neo4j/subjects"
 	log "github.com/Sirupsen/logrus"
 	"github.com/jawher/mow.cli"
