@@ -1,7 +1,6 @@
 package subjects
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -128,9 +127,7 @@ func TestWritePrefLabelIsAlsoWrittenAndIsEqualToName(t *testing.T) {
 	uuid := "12345"
 	subjectToWrite := Subject{UUID: uuid, CanonicalName: "Test", TmeIdentifier: "TME_ID"}
 
-	storedSubject := subjectsDriver.Write(subjectToWrite)
-
-	fmt.Printf("", storedSubject)
+	assert.NoError(subjectsDriver.Write(subjectToWrite), "Failed to write subject")
 
 	result := []struct {
 		PrefLabel string `json:"t.prefLabel"`
