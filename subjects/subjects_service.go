@@ -22,6 +22,7 @@ func (s service) Initialise() error {
 	return neoutils.EnsureConstraints(s.indexManager, map[string]string{
 		"Thing":   "uuid",
 		"Concept": "uuid",
+		"Classification": "uuid",
 		"Subject": "uuid"})
 }
 
@@ -72,6 +73,7 @@ func (s service) Write(thing interface{}) error {
 		Statement: `MERGE (n:Thing {uuid: {uuid}})
 					set n={allprops}
 					set n :Concept
+					set n :Classification
 					set n :Subject
 		`,
 		Parameters: map[string]interface{}{
@@ -89,6 +91,7 @@ func (s service) Delete(uuid string) (bool, error) {
 		Statement: `
 			MATCH (s:Thing {uuid: {uuid}})
 			REMOVE s:Concept
+			REMOVE s:Classification
 			REMOVE s:Subject
 			SET s={props}
 		`,
