@@ -39,7 +39,7 @@ NB: the default batchSize is much higher than the throughput the instance data i
 ## Endpoints
 /subjects/{uuid}
 ### PUT
-The only mandatory field is the uuid, and the uuid in the body must match the one used on the path.
+The only mandatory fields are the uuid, the prefLabel and the alternativeIdentifier uuids (because the uuid is also listed in the alternativeIdentifier uuids list).
 
 Every request results in an attempt to update that subject: unlike with GraphDB there is no check on whether the subject already exists and whether there are any changes between what's there and what's being written. We just do a MERGE which is Neo4j for create if not there, update if it is there.
 
@@ -50,7 +50,10 @@ We run queries in batches. If a batch fails, all failing requests will get a 500
 Invalid json body input, or uuids that don't match between the path and the body will result in a 400 bad request response.
 
 Example:
-`curl -XPUT -H "X-Request-Id: 123" -H "Content-Type: application/json" localhost:8080/subjects/bba39990-c78d-3629-ae83-808c333c6dbc --data '{"uuid":"bba39990-c78d-3629-ae83-808c333c6dbc","canonicalName":"Metals Markets","tmeIdentifier":"MTE3-U3ViamVjdHM=","type":"Subject"}'`
+`curl -XPUT -H "X-Request-Id: 123" -H "Content-Type: application/json" localhost:8080/subjects/bba39990-c78d-3629-ae83-808c333c6dbc --data '{"uuid":"bba39990-c78d-3629-ae83-808c333c6dbc","prefLabel":"Metals Markets", "alternativeIdentifiers":{"TME":["MTE3-U3ViamVjdHM="],"uuids": ["bba39990-c78d-3629-ae83-808c333c6dbc","6a2a0170-6afa-4bcc-b427-430268d2ac50"],"type":"Subject"}}'`
+
+The type field is not currently validated - instead, the Subject Writer writes type Subject and its parent types (Thing, Concept, Classification) as labels for the Subject.
+
 
 ### GET
 The internal read should return what got written
